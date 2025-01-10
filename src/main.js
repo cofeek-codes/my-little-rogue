@@ -1,7 +1,5 @@
-import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
-import { ImageAddon } from '@xterm/addon-image'
-import { AttachAddon } from '@xterm/addon-attach'
+
 import './style.css'
 
 let t = new Terminal({ fontSize: 18 })
@@ -12,10 +10,12 @@ let lineLength = map.length / t.rows
 
 t.open(document.getElementById('app'))
 
+
 // top line
 for (let i = 0; i <= lineLength; i++) {
     map[i] = '#'
 }
+
 
 // bottom line
 for (let i = map.length - 1; i >= (map.length - lineLength); i--) {
@@ -26,13 +26,13 @@ for (let i = 0; i <= t.rows; i++) {
     map[lineLength * i] = '#'
 }
 
-
 let chr = {
     pos: { x: 3, y: 3, oldX: 0, oldY: 0 },
     chr: '@'
 }
+
 // display character
-// map[chr.pos.x + chr.pos.y * lineLength] = chr.chr
+
 displayCharacter()
 
 // move character
@@ -43,38 +43,34 @@ document.onkeydown = function (e) {
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.x--
-            validateCharacterPosition()
-            displayCharacter()
-            drawMap()
+            update()
             break;
         case 'd':
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.x++
-            validateCharacterPosition()
-            displayCharacter()
-            drawMap()
+            update()
             break;
         case 's':
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.y++
-            validateCharacterPosition()
-            displayCharacter()
-            drawMap()
+            update()
             break;
         case 'w':
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.y--
-            validateCharacterPosition()
-            displayCharacter()
-            drawMap()
+            update()
             break;
 
 
     }
 }
+
+console.log(map)
+drawMap()
+
 
 // map points enum
 const MAP_POINT = {
@@ -82,16 +78,22 @@ const MAP_POINT = {
     WALL: '#' // wall; can't move
 }
 
-drawMap()
-
 function displayCharacter() {
 
     if (typeof map == 'string')
         map = map.split('')
 
-    mapSetPoint(chr.pos.oldX, chr.pos.oldY, '.')
-
     mapSetPoint(chr.pos.x, chr.pos.y, chr.chr)
+
+    if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
+        mapSetPoint(chr.pos.oldX, chr.pos.oldY, '.')
+
+}
+
+function update() {
+    validateCharacterPosition()
+    displayCharacter()
+    drawMap()
 }
 
 function validateCharacterPosition() {
