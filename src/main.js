@@ -2,32 +2,40 @@ import { Terminal } from '@xterm/xterm'
 
 import './style.css'
 
+// map points enum
+const MAP_POINT = {
+    SPACE: '.', // empty space; can move
+    WALL: '#', // wall; can't move
+    DOOR: '|', // indicating level change
+}
+
 let t = new Terminal({ fontSize: 18 })
 
-let map = new Array(t.rows * t.cols).fill('.')
+let map = new Array(t.rows * t.cols).fill(MAP_POINT.SPACE)
 
 let lineLength = map.length / t.rows
 let linesCount = map.length / lineLength
 
 t.open(document.getElementById('app'))
 
-
 // top line
 for (let i = 0; i <= lineLength; i++) {
-    map[i] = '#'
+    map[i] = MAP_POINT.WALL
 }
 
 
 // bottom line
 for (let i = map.length - 1; i >= (map.length - lineLength); i--) {
-    map[i] = '#'
+    map[i] = MAP_POINT.WALL
 }
 
 // side lines
 for (let i = 0; i <= linesCount; i++) {
-    map[lineLength * i] = '#'
-    map[(lineLength * i) - 1] = '#'
+    map[lineLength * i] = MAP_POINT.WALL
+    map[(lineLength * i) - 1] = MAP_POINT.WALL
 }
+
+displayDoor()
 
 // cutting map's tail
 for (let i = 0; i <= map.length - (linesCount * lineLength); i++) {
@@ -52,25 +60,25 @@ document.onkeydown = function (e) {
             chr.pos.oldX = chr.pos.x
             chr.pos.x--
             update()
-            break;
+            break
         case 'd':
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.x++
             update()
-            break;
+            break
         case 's':
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.y++
             update()
-            break;
+            break
         case 'w':
             chr.pos.oldY = chr.pos.y
             chr.pos.oldX = chr.pos.x
             chr.pos.y--
             update()
-            break;
+            break
 
 
     }
@@ -79,11 +87,14 @@ document.onkeydown = function (e) {
 drawMap()
 console.log(map)
 
+function displayDoor() {
+    let doorPos = rand(1, linesCount)
+    map[(lineLength * doorPos) - 1] = MAP_POINT.DOOR
 
-// map points enum
-const MAP_POINT = {
-    SPACE: '.', // empty space; can move
-    WALL: '#' // wall; can't move
+}
+
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 function displayCharacter() {
@@ -92,7 +103,7 @@ function displayCharacter() {
         map = map.split('')
 
     if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
-        mapSetPoint(chr.pos.oldX, chr.pos.oldY, '.')
+        mapSetPoint(chr.pos.oldX, chr.pos.oldY, MAP_POINT.SPACE)
 
     mapSetPoint(chr.pos.x, chr.pos.y, chr.chr)
 }
@@ -105,11 +116,21 @@ function update() {
 
 function validateCharacterPosition() {
     let point = mapGetPoint(chr.pos.x, chr.pos.y)
-    // if wall don't let character move
-    if (point == MAP_POINT.WALL) {
-        chr.pos.x = chr.pos.oldX
-        chr.pos.y = chr.pos.oldY
+    switch (point) {
+        // if wall don't let character move
+        case MAP_POINT.WALL:
+            chr.pos.x = chr.pos.oldX
+            chr.pos.y = chr.pos.oldY
+            break;
+        // if door generate new level
+        case MAP_POINT.DOOR:
+            generateNewLevel()
+            break
     }
+}
+
+function generateNewLevel() {
+    throw new Error('todo')
 }
 
 function mapGetPoint(x, y) {
