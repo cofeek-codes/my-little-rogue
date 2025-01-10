@@ -7,6 +7,7 @@ let t = new Terminal({ fontSize: 18 })
 let map = new Array(t.rows * t.cols).fill('.')
 
 let lineLength = map.length / t.rows
+let linesCount = map.length / lineLength
 
 t.open(document.getElementById('app'))
 
@@ -22,8 +23,15 @@ for (let i = map.length - 1; i >= (map.length - lineLength); i--) {
     map[i] = '#'
 }
 
-for (let i = 0; i <= t.rows; i++) {
+// side lines
+for (let i = 0; i <= linesCount; i++) {
     map[lineLength * i] = '#'
+    map[(lineLength * i) - 1] = '#'
+}
+
+// cutting map's tail
+for (let i = 0; i <= map.length - (linesCount * lineLength); i++) {
+    map.pop()
 }
 
 let chr = {
@@ -68,8 +76,8 @@ document.onkeydown = function (e) {
     }
 }
 
-console.log(map)
 drawMap()
+console.log(map)
 
 
 // map points enum
@@ -83,11 +91,10 @@ function displayCharacter() {
     if (typeof map == 'string')
         map = map.split('')
 
-    mapSetPoint(chr.pos.x, chr.pos.y, chr.chr)
-
     if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
         mapSetPoint(chr.pos.oldX, chr.pos.oldY, '.')
 
+    mapSetPoint(chr.pos.x, chr.pos.y, chr.chr)
 }
 
 function update() {
