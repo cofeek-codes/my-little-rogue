@@ -130,7 +130,28 @@ function validateCharacterPosition() {
 }
 
 function generateNewLevel() {
-    throw new Error('todo')
+    clearMap()
+    chr.pos.x = rand(3, 6)
+    chr.pos.y = rand(3, 6)
+    displayDoor()
+    update()
+}
+
+function clearMap() {
+    if (typeof map !== 'string') map.join('')
+
+    Object.keys(MAP_POINT).forEach(key => {
+
+        if (key == MAP_POINT.WALL)
+            return
+
+        if (key == MAP_POINT.DOOR)
+            map.replace(key, MAP_POINT.WALL)
+
+        map.replaceAll(key, MAP_POINT.SPACE)
+
+    })
+
 }
 
 function mapGetPoint(x, y) {
