@@ -85,12 +85,14 @@ document.onkeydown = function (e) {
 }
 
 drawMap()
-console.log(map)
 
 function displayDoor() {
     let doorPos = rand(1, linesCount)
-    map[(lineLength * doorPos) - 1] = MAP_POINT.DOOR
 
+    if (typeof map == 'string')
+        map = map.split('')
+
+    mapSetPoint(lineLength - 1, doorPos, MAP_POINT.DOOR)
 }
 
 function rand(min, max) {
@@ -130,6 +132,7 @@ function validateCharacterPosition() {
 }
 
 function generateNewLevel() {
+    // debugger
     clearMap()
     chr.pos.x = rand(3, 6)
     chr.pos.y = rand(3, 6)
@@ -141,15 +144,13 @@ function clearMap() {
     if (typeof map !== 'string') map.join('')
 
     Object.keys(MAP_POINT).forEach(key => {
-
-        if (key == MAP_POINT.WALL)
+        if (key == MAP_POINT.WALL) {
             return
-
-        if (key == MAP_POINT.DOOR)
+        } else if (key == MAP_POINT.DOOR) {
             map.replace(key, MAP_POINT.WALL)
-
-        map.replaceAll(key, MAP_POINT.SPACE)
-
+        } else {
+            map.replace(key, MAP_POINT.SPACE)
+        }
     })
 
 }
