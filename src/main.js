@@ -89,8 +89,9 @@ drawMap()
 function displayDoor() {
     let doorPos = rand(1, linesCount)
 
-    if (typeof map == 'string')
-        map = map.split('')
+    mapToArray()
+
+    mapReplacePoint(MAP_POINT.DOOR, MAP_POINT.WALL)
 
     mapSetPoint(lineLength - 1, doorPos, MAP_POINT.DOOR)
 }
@@ -101,8 +102,7 @@ function rand(min, max) {
 
 function displayCharacter() {
 
-    if (typeof map == 'string')
-        map = map.split('')
+    mapToArray()
 
     if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
         mapSetPoint(chr.pos.oldX, chr.pos.oldY, MAP_POINT.SPACE)
@@ -123,7 +123,7 @@ function validateCharacterPosition() {
         case MAP_POINT.WALL:
             chr.pos.x = chr.pos.oldX
             chr.pos.y = chr.pos.oldY
-            break;
+            break
         // if door generate new level
         case MAP_POINT.DOOR:
             generateNewLevel()
@@ -141,7 +141,7 @@ function generateNewLevel() {
 }
 
 function clearMap() {
-    if (typeof map !== 'string') map.join('')
+    mapToString()
 
     Object.keys(MAP_POINT).forEach(key => {
         if (key == MAP_POINT.WALL) {
@@ -155,6 +155,16 @@ function clearMap() {
 
 }
 
+function mapToArray() {
+    if (typeof map != 'object')
+        map = map.split('')
+}
+
+function mapToString() {
+    if (typeof map != 'string')
+        map = map.join('')
+}
+
 function mapGetPoint(x, y) {
     return map[x + y * lineLength]
 }
@@ -164,9 +174,16 @@ function mapSetPoint(x, y, chr) {
     map[x + y * lineLength] = chr
 }
 
-function drawMap() {
+function mapReplacePoint(from, to) {
+    var idx = map.findIndex(p => p == from)
+    if (idx == -1)
+        return
 
-    map = map.join('')
+    map[idx] = to
+}
+
+function drawMap() {
+    mapToString()
 
     t.writeln(map)
 
