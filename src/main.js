@@ -126,6 +126,7 @@ function validateCharacterPosition() {
 function generateNewLevel() {
     // debugger
     clearMap()
+    t.clear() // clear buffer on level change
     chr.pos.x = rand(3, 6)
     chr.pos.y = rand(3, 6)
     displayDoor()
