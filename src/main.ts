@@ -3,35 +3,35 @@ import { Terminal } from '@xterm/xterm'
 import './style.css'
 
 // map points enum
-const MAP_POINT = {
-    SPACE: '.', // empty space; can move
-    WALL: '#', // wall; can't move
-    DOOR: '|', // indicating level change
+enum MapPoint {
+    SPACE = '.', // empty space; can move
+    WALL = '#', // wall; can't move
+    DOOR = '|', // indicating level change
 }
 
 let t = new Terminal({ fontSize: 18 })
 
-let map = new Array(t.rows * t.cols).fill(MAP_POINT.SPACE)
+let map: string[] = new Array(t.rows * t.cols).fill(MapPoint.SPACE)
 
 let lineLength = map.length / t.rows
 let linesCount = map.length / lineLength
 
-t.open(document.getElementById('app'))
+t.open(document.getElementById('app')!)
 
 // top line
 for (let i = lineLength; i <= lineLength * 2; i++) {
-    map[i] = MAP_POINT.WALL
+    map[i] = MapPoint.WALL
 }
 
 // bottom line
 for (let i = map.length - 1; i >= map.length - lineLength; i--) {
-    map[i] = MAP_POINT.WALL
+    map[i] = MapPoint.WALL
 }
 
 // side lines
 for (let i = 0; i <= linesCount; i++) {
-    map[lineLength * i] = MAP_POINT.WALL
-    map[lineLength * i - 1] = MAP_POINT.WALL
+    map[lineLength * i] = MapPoint.WALL
+    map[lineLength * i - 1] = MapPoint.WALL
 }
 
 // cutting map's tail
@@ -82,22 +82,18 @@ function displayDoor() {
     // because top line is actually second now
     let doorPos = rand(1, linesCount + 1)
 
-    mapToArray()
+    mapReplacePoint(MapPoint.DOOR, MapPoint.WALL)
 
-    mapReplacePoint(MAP_POINT.DOOR, MAP_POINT.WALL)
-
-    mapSetPoint(lineLength - 1, doorPos, MAP_POINT.DOOR)
+    mapSetPoint(lineLength - 1, doorPos, MapPoint.DOOR)
 }
 
-function rand(min, max) {
+function rand(min: number, max: number) {
     return Math.floor(Math.random() * (max - min) + min)
 }
 
 function displayCharacter() {
-    mapToArray()
-
     if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
-        mapSetPoint(chr.pos.oldX, chr.pos.oldY, MAP_POINT.SPACE)
+        mapSetPoint(chr.pos.oldX, chr.pos.oldY, MapPoint.SPACE)
 
     mapSetPoint(chr.pos.x, chr.pos.y, chr.chr)
 }
@@ -112,12 +108,12 @@ function validateCharacterPosition() {
     let point = mapGetPoint(chr.pos.x, chr.pos.y)
     switch (point) {
         // if wall don't let character move
-        case MAP_POINT.WALL:
+        case MapPoint.WALL:
             chr.pos.x = chr.pos.oldX
             chr.pos.y = chr.pos.oldY
             break
         // if door generate new level
-        case MAP_POINT.DOOR:
+        case MapPoint.DOOR:
             generateNewLevel()
             break
     }
@@ -134,36 +130,26 @@ function generateNewLevel() {
 }
 
 function clearMap() {
-    mapToString()
-
-    Object.keys(MAP_POINT).forEach(key => {
-        if (key == MAP_POINT.WALL) {
+    Object.values(MapPoint).forEach(value => {
+        if (value == MapPoint.WALL) {
             return
-        } else if (key == MAP_POINT.DOOR) {
-            map.replace(key, MAP_POINT.WALL)
+        } else if (value == MapPoint.DOOR) {
+            mapReplacePoint(value, MapPoint.WALL)
         } else {
-            map.replace(key, MAP_POINT.SPACE)
+            mapReplacePoint(value, MapPoint.SPACE)
         }
     })
 }
 
-function mapToArray() {
-    if (typeof map != 'object') map = map.split('')
-}
-
-function mapToString() {
-    if (typeof map != 'string') map = map.join('')
-}
-
-function mapGetPoint(x, y) {
+function mapGetPoint(x: number, y: number) {
     return map[x + y * lineLength]
 }
 
-function mapSetPoint(x, y, chr) {
+function mapSetPoint(x: number, y: number, chr: string) {
     map[x + y * lineLength] = chr
 }
 
-function mapReplacePoint(from, to) {
+function mapReplacePoint(from: MapPoint, to: MapPoint) {
     var idx = map.findIndex(p => p == from)
     if (idx == -1) return
 
@@ -171,7 +157,5 @@ function mapReplacePoint(from, to) {
 }
 
 function drawMap() {
-    mapToString()
-
-    t.writeln(map)
+    t.writeln(map.join(''))
 }
