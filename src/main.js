@@ -19,7 +19,7 @@ let linesCount = map.length / lineLength
 t.open(document.getElementById('app'))
 
 // top line
-for (let i = 0; i <= lineLength; i++) {
+for (let i = lineLength; i <= lineLength * 2; i++) {
     map[i] = MAP_POINT.WALL
 }
 
@@ -84,7 +84,9 @@ document.onkeydown = function (e) {
 drawMap()
 
 function displayDoor() {
-    let doorPos = rand(1, linesCount)
+    // use linesCount + 1 here
+    // because top line is actually second now
+    let doorPos = rand(1, linesCount + 1)
 
     mapToArray()
 
