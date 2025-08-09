@@ -23,28 +23,27 @@ for (let i = 0; i <= lineLength; i++) {
     map[i] = MAP_POINT.WALL
 }
 
-
 // bottom line
-for (let i = map.length - 1; i >= (map.length - lineLength); i--) {
+for (let i = map.length - 1; i >= map.length - lineLength; i--) {
     map[i] = MAP_POINT.WALL
 }
 
 // side lines
 for (let i = 0; i <= linesCount; i++) {
     map[lineLength * i] = MAP_POINT.WALL
-    map[(lineLength * i) - 1] = MAP_POINT.WALL
+    map[lineLength * i - 1] = MAP_POINT.WALL
 }
 
 displayDoor()
 
 // cutting map's tail
-for (let i = 0; i <= map.length - (linesCount * lineLength); i++) {
+for (let i = 0; i <= map.length - linesCount * lineLength; i++) {
     map.pop()
 }
 
 let chr = {
     pos: { x: 3, y: 3, oldX: 0, oldY: 0 },
-    chr: '@'
+    chr: '@',
 }
 
 // display character
@@ -79,8 +78,6 @@ document.onkeydown = function (e) {
             chr.pos.y--
             update()
             break
-
-
     }
 }
 
@@ -97,11 +94,10 @@ function displayDoor() {
 }
 
 function rand(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(Math.random() * (max - min) + min)
 }
 
 function displayCharacter() {
-
     mapToArray()
 
     if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
@@ -152,23 +148,19 @@ function clearMap() {
             map.replace(key, MAP_POINT.SPACE)
         }
     })
-
 }
 
 function mapToArray() {
-    if (typeof map != 'object')
-        map = map.split('')
+    if (typeof map != 'object') map = map.split('')
 }
 
 function mapToString() {
-    if (typeof map != 'string')
-        map = map.join('')
+    if (typeof map != 'string') map = map.join('')
 }
 
 function mapGetPoint(x, y) {
     return map[x + y * lineLength]
 }
-
 
 function mapSetPoint(x, y, chr) {
     map[x + y * lineLength] = chr
@@ -176,8 +168,7 @@ function mapSetPoint(x, y, chr) {
 
 function mapReplacePoint(from, to) {
     var idx = map.findIndex(p => p == from)
-    if (idx == -1)
-        return
+    if (idx == -1) return
 
     map[idx] = to
 }
@@ -186,5 +177,4 @@ function drawMap() {
     mapToString()
 
     t.writeln(map)
-
 }
