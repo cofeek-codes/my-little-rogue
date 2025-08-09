@@ -34,8 +34,6 @@ for (let i = 0; i <= linesCount; i++) {
     map[lineLength * i - 1] = MAP_POINT.WALL
 }
 
-displayDoor()
-
 // cutting map's tail
 for (let i = 0; i <= map.length - linesCount * lineLength; i++) {
     map.pop()
@@ -45,10 +43,6 @@ let chr = {
     pos: { x: 3, y: 3, oldX: 0, oldY: 0 },
     chr: '@',
 }
-
-// display character
-
-displayCharacter()
 
 // move character
 
@@ -81,7 +75,7 @@ document.onkeydown = function (e) {
     }
 }
 
-drawMap()
+generateNewLevel()
 
 function displayDoor() {
     // use linesCount + 1 here
