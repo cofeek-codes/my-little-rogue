@@ -2,6 +2,9 @@ import { Terminal } from '@xterm/xterm'
 
 import './style.css'
 
+import Character, { MoveDirection } from './character/character'
+import Point from './types/point'
+
 // map points enum
 enum MapPoint {
     SPACE = '.', // empty space; can move
@@ -39,37 +42,27 @@ for (let i = 0; i <= map.length - linesCount * lineLength; i++) {
     map.pop()
 }
 
-let chr = {
-    pos: { x: 3, y: 3, oldX: 0, oldY: 0 },
-    chr: '@',
-}
+let character = new Character(new Point(3, 3), '@')
 
 // move character
 
 document.onkeydown = function (e) {
+    debugger
     switch (e.key) {
         case 'a':
-            chr.pos.oldY = chr.pos.y
-            chr.pos.oldX = chr.pos.x
-            chr.pos.x--
+            character.move(MoveDirection.LEFT)
             update()
             break
         case 'd':
-            chr.pos.oldY = chr.pos.y
-            chr.pos.oldX = chr.pos.x
-            chr.pos.x++
+            character.move(MoveDirection.RIGHT)
             update()
             break
         case 's':
-            chr.pos.oldY = chr.pos.y
-            chr.pos.oldX = chr.pos.x
-            chr.pos.y++
+            character.move(MoveDirection.DOWN)
             update()
             break
         case 'w':
-            chr.pos.oldY = chr.pos.y
-            chr.pos.oldX = chr.pos.x
-            chr.pos.y--
+            character.move(MoveDirection.UP)
             update()
             break
     }
@@ -84,7 +77,7 @@ function displayDoor() {
 
     mapReplacePoint(MapPoint.DOOR, MapPoint.WALL)
 
-    mapSetPoint(lineLength - 1, doorPos, MapPoint.DOOR)
+    mapSetPoint(new Point(lineLength - 1, doorPos), MapPoint.DOOR)
 }
 
 function rand(min: number, max: number) {
@@ -92,10 +85,9 @@ function rand(min: number, max: number) {
 }
 
 function displayCharacter() {
-    if (chr.pos.oldX > 0 || chr.pos.oldY > 0)
-        mapSetPoint(chr.pos.oldX, chr.pos.oldY, MapPoint.SPACE)
-
-    mapSetPoint(chr.pos.x, chr.pos.y, chr.chr)
+    if (!character.oldPosition.isZero())
+        mapSetPoint(character.oldPosition, MapPoint.SPACE)
+    mapSetPoint(character.position, character.chr)
 }
 
 function update() {
@@ -105,12 +97,11 @@ function update() {
 }
 
 function validateCharacterPosition() {
-    let point = mapGetPoint(chr.pos.x, chr.pos.y)
+    let point = mapGetPoint(character.position)
     switch (point) {
         // if wall don't let character move
         case MapPoint.WALL:
-            chr.pos.x = chr.pos.oldX
-            chr.pos.y = chr.pos.oldY
+            character.revertPosition()
             break
         // if door generate new level
         case MapPoint.DOOR:
@@ -123,8 +114,7 @@ function generateNewLevel() {
     // debugger
     clearMap()
     t.clear() // clear buffer on level change
-    chr.pos.x = rand(3, 6)
-    chr.pos.y = rand(3, 6)
+    character.position = new Point(rand(3, 6), rand(3, 6))
     displayDoor()
     update()
 }
@@ -141,12 +131,13 @@ function clearMap() {
     })
 }
 
-function mapGetPoint(x: number, y: number) {
-    return map[x + y * lineLength]
+function mapGetPoint(p: Point) {
+    return map[p.x + p.y * lineLength]
 }
 
-function mapSetPoint(x: number, y: number, chr: string) {
-    map[x + y * lineLength] = chr
+function mapSetPoint(p: Point, chr: string) {
+    console.log(p)
+    return (map[p.x + p.y * lineLength] = chr)
 }
 
 function mapReplacePoint(from: MapPoint, to: MapPoint) {
