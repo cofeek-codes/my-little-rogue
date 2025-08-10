@@ -14,6 +14,8 @@
         "vite": "^6.0.5"
     },
     "dependencies": {
+        "@bbob/html": "^4.2.0",
+        "@bbob/preset-html5": "^4.2.0",
         "@xterm/addon-attach": "^0.11.0",
         "@xterm/addon-fit": "^0.10.0",
         "@xterm/addon-image": "^0.8.0",

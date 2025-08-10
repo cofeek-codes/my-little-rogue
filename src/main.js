@@ -1,4 +1,6 @@
 import { Terminal } from '@xterm/xterm'
+import bbobHTML from '@bbob/html'
+import presetHTML5 from '@bbob/preset-html5'
 
 import './style.css'
 
@@ -15,6 +17,10 @@ let map = new Array(t.rows * t.cols).fill(MAP_POINT.SPACE)
 
 let lineLength = map.length / t.rows
 let linesCount = map.length / lineLength
+
+// logger
+
+let logger = document.getElementById('logger')
 
 t.open(document.getElementById('app'))
 
@@ -124,13 +130,15 @@ function validateCharacterPosition() {
 }
 
 function generateNewLevel() {
-    // debugger
     clearMap()
     t.clear() // clear buffer on level change
     chr.pos.x = rand(3, 6)
     chr.pos.y = rand(3, 6)
     displayDoor()
     update()
+    loggerLog('new level is [b]generated[/b]')
+    loggerLog('[color="red"]enemies[/color] will spawn soon')
+    loggerLog('you recieved [color="gold"]3 coins[/color]')
 }
 
 function clearMap() {
@@ -174,4 +182,13 @@ function drawMap() {
     mapToString()
 
     t.writeln(map)
+}
+
+function loggerLog(message) {
+    let html = bbobHTML(message, presetHTML5())
+    let line = document.createElement('div')
+    line.innerHTML = html
+    logger.appendChild(line)
+    console.log(logger)
+    console.log(html)
 }
