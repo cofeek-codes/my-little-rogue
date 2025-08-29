@@ -22,6 +22,8 @@ let linesCount = map.length / lineLength
 
 let logger = document.getElementById('logger')
 
+// main map start
+
 t.open(document.getElementById('app'))
 
 // top line
