@@ -6,10 +6,15 @@ import './style.css'
 
 // map points enum
 const MAP_POINT = {
+    // Structs
     SPACE: '.', // empty space; can move
     WALL: '#', // wall; can't move
     DOOR: '|', // indicating level change
+    // Enemies
+    RAT: 'R',
 }
+
+let enemies = [MAP_POINT.RAT]
 
 let t = new Terminal({ fontSize: 18 })
 
@@ -17,6 +22,9 @@ let map = new Array(t.rows * t.cols).fill(MAP_POINT.SPACE)
 
 let lineLength = map.length / t.rows
 let linesCount = map.length / lineLength
+
+let firstSpace = lineLength * 2 + 1
+let lastSpace = map.length - lineLength - 2
 
 // logger
 
@@ -97,6 +105,15 @@ function displayDoor() {
     mapSetPoint(lineLength - 1, doorPos, MAP_POINT.DOOR)
 }
 
+function spawnEnemies() {
+    var enemyToSpawn = arrayPickRandom(enemies)
+    var enemyPos = mapGetRandomSpacePoint()
+    mapSetPoint(enemyPos.x, enemyPos.y, enemyToSpawn)
+    console.log(
+        `should spawn ${enemyToSpawn} at point (${enemyPos.x}, ${enemyPos.y})`
+    )
+}
+
 function rand(min, max) {
     return Math.floor(Math.random() * (max - min) + min)
 }
@@ -137,10 +154,8 @@ function generateNewLevel() {
     chr.pos.x = rand(3, 6)
     chr.pos.y = rand(3, 6)
     displayDoor()
+    spawnEnemies()
     update()
-    loggerLog('new level is [b]generated[/b]')
-    loggerLog('[color="red"]enemies[/color] will spawn soon')
-    loggerLog('you recieved [color="gold"]3 coins[/color]')
 }
 
 function clearMap() {
@@ -169,6 +184,30 @@ function mapGetPoint(x, y) {
     return map[x + y * lineLength]
 }
 
+function mapGetRandomSpacePoint() {
+    let p = mapPointFromIndex(rand(firstSpace, lastSpace))
+
+    while (mapGetPoint(p.x, p.y) != MAP_POINT.SPACE) {
+        p = mapPointFromIndex(rand(firstSpace, lastSpace))
+    }
+
+    return p
+}
+
+function mapPointFromIndex(idx) {
+    if (idx < firstSpace || idx > lastSpace)
+        throw new Error('mapPointFromIndex() idx outside of spaces boundaries')
+
+    let x = idx % lineLength
+    let y = Math.round(idx / lineLength)
+
+    return { x, y }
+}
+
+function mapIndexFromPoint(x, y) {
+    return x + y * lineLength
+}
+
 function mapSetPoint(x, y, chr) {
     map[x + y * lineLength] = chr
 }
@@ -193,4 +232,8 @@ function loggerLog(message) {
     logger.appendChild(line)
     console.log(logger)
     console.log(html)
+}
+
+function arrayPickRandom(array) {
+    return array[rand(0, array.length)]
 }
