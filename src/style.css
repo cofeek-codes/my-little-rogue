@@ -1,0 +1,26 @@
+/* null */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0px;
+    border: none;
+}
+
+/* main */
+
+body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+canvas {
+    width: 80vw;
+    height: 80vh;
+}
