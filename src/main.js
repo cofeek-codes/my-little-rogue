@@ -105,6 +105,8 @@ function displayDoor() {
     mapSetPoint(lineLength - 1, doorPos, MAP_POINT.DOOR)
 }
 
+// enemies
+
 function spawnEnemies() {
     var enemyToSpawn = arrayPickRandom(enemies)
     var enemyPos = mapGetRandomSpacePoint()
@@ -114,8 +116,18 @@ function spawnEnemies() {
     )
 }
 
+function updateEnemies() {
+    let enemyPositions = mapGetAllEnemyPositions()
+    console.log('enemy positions at updateEnemies()')
+    console.log(enemyPositions)
+}
+
 function rand(min, max) {
     return Math.floor(Math.random() * (max - min) + min)
+}
+
+function mapGetAllEnemyPositions() {
+    return mapGetAllPointPositionsFromType(MAP_POINT.RAT) // for now
 }
 
 function displayCharacter() {
@@ -128,6 +140,7 @@ function displayCharacter() {
 }
 
 function update() {
+    updateEnemies()
     validateCharacterPosition()
     displayCharacter()
     drawMap()
@@ -182,6 +195,22 @@ function mapToString() {
 
 function mapGetPoint(x, y) {
     return map[x + y * lineLength]
+}
+
+function mapGetAllPointPositionsFromType(pointType) {
+    let foundPoints = []
+
+    for (let i = 0; i < map.length; i++) {
+        let point = map[i]
+
+        if (point == pointType) {
+            console.log('current point:')
+            console.log(point, mapPointFromIndex(i))
+            foundPoints.push(mapPointFromIndex(i))
+        }
+    }
+
+    return foundPoints
 }
 
 function mapGetRandomSpacePoint() {
